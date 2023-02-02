@@ -1,8 +1,5 @@
-import sys
-with open(f'{sys.argv[0].split(".")[0]}.input') as f:
-    lines = f.readlines()
-    for i in range(len(lines)):
-        lines[i] = lines[i].strip()
+from util import read_input
+lines = read_input()
 
 # Part 1
 import string

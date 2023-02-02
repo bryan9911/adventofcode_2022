@@ -1,6 +1,5 @@
-import sys
-with open(f'{sys.argv[0].split(".")[0]}.input') as f:
-    lines = f.readlines()
+from util import read_input
+lines = read_input()
 
 calories = []
 sum_c = 0
