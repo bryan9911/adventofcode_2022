@@ -1,5 +1,4 @@
 import sys, os
-from collections import Counter
 
 signal = open(sys.argv[1]).readline().replace('\n','')
 
