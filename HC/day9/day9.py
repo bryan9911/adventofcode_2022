@@ -2,15 +2,12 @@ import sys
 import numpy as np
 
 moves = open(sys.argv[1]).readlines()
-head_loc = np.array([0,0])
-tail_loc = np.array([0,0])
-tracker = []
-max_height, min_height = 0, 0
-max_width, min_width = 0, 0
+tot_len = int(sys.argv[2])
+tails = [np.array([0,0]) for _ in range(tot_len)]
+tracker, tracker_last = [], []
 
-def head_moves(movement):
-    direction,repeat = movement
-    global head_loc, d
+def head_moves(direction,repeat,head,tail,i):
+    global tot_len, tracker, tracker_last
     #d = [up_down,left_right]
 
     if direction == 'U':
@@ -25,103 +22,67 @@ def head_moves(movement):
     elif direction == 'R':
         d = np.array([0,1])
 
-    for _ in range(int(repeat)):
-        head_loc += d
-        tail_moves()
-        #print(head_loc, tail_loc)
-        Marauders_map()
-        tracking()
-        tracking2()
+    
+    # move only the first
+    if i == 1:
+        head += d
 
-def tail_moves():
-    global head_loc, tail_loc, d
+    tail = tail_moves(head,tail)
 
-    diff_up_down, diff_left_right = head_loc - tail_loc
-    move = [0,0]
-    if (diff_up_down > 1 and diff_left_right == 1) or (diff_up_down == 1 and diff_left_right > 1):
+    tracking(tail,tracker)
+    
+    # if the last tail moved
+    if i == tot_len-1 :
+        tracking(tail,tracker_last)
+
+    return head, tail
+
+def tracking(tail,trackerr):
+    tail_loc = tail
+    trackerr.append(str(tail_loc.tolist()))
+
+def tail_moves(head,tail):
+
+    #diff_up_down, diff_left_right = head_loc - tail_loc
+    dh, dw = head - tail
+
+    if abs(dh) <= 1 and abs(dw) <= 1:
+        move = [0,0]
+
+    elif dh + dw >= 3:
         move = [1,1]
 
-    elif (diff_up_down < -1 and diff_left_right == -1) or (diff_up_down == -1 and diff_left_right < -1):
+    elif dh + dw <= -3:
         move = [-1,-1]
 
-    elif (diff_up_down > 1 and diff_left_right == -1) or (diff_up_down == 1 and diff_left_right < -1):
-        move = [1,-1]
-
-    elif (diff_up_down < -1 and diff_left_right == 1) or (diff_up_down == -1 and diff_left_right > 1):
-        move = [-1,1]
-
-    elif diff_up_down > 1:
+    elif dh >= 2 and dw == 0:
         move = [1,0]
 
-    elif diff_up_down < -1:
+    elif dh <= -2 and dw == 0:
         move = [-1,0]
 
-    elif diff_left_right > 1:
+    elif dh == 0 and dw >= 2:
         move = [0,1]
 
-    elif diff_left_right < -1:
+    elif dh == 0 and dw <= -2:
         move = [0,-1]
 
-    tail_loc += move
+    elif dh > 0:
+        move = [1,-1]
 
-def Marauders_map():
-    global head_loc, tail_loc, tracker
+    elif dh < 0:
+        move = [-1,1]
 
-    for i in range(5,-1,-1):
-        for j in range(6):
-            dot = [i,j]
-            #print(dot,head_loc,tail_loc)
-            if dot == head_loc.tolist():
-                print('H',end='')
-                pass
-            elif dot == tail_loc.tolist():
-                print('T',end='')
-                tracker.append(str(dot))
-            elif dot == [0,0]:
-                pass
-                print('s',end='')
-            else:
-                pass
-                print('.',end='')
-        print()
-    print()
+    tail += np.array(move)
 
-def Marauders_map_tracker():
-    global head_loc, tail_loc, tracker
-    answer_1 = 0
-    for i in range(5,-1,-1):
-        for j in range(6):
-            dot = str([i,j])
-            #print(dot,head_loc,tail_loc)
-            if dot in tracker:
-                answer_1 += 1
-                print('#',end='')
-            else:
-                pass
-                print('.',end='')
-        print()
-    #print(answer_1)
+    return tail
 
-def tracking():
-    global head_loc, tail_loc, tracker
-    tracker.append(str(tail_loc.tolist()))
+for move in moves:
+    direction,repeat = move.split()
+    for _ in range(int(repeat)):
+        for i in range(1,tot_len):
 
-def tracking2():
-    print('hello')
-    
-def main_test():
-    for move in moves:
-        print(f'== {move.rstrip()} ==\n')
-        head_moves(move.split())
+            tails[i-1], tails[i] = head_moves(direction,repeat,tails[i-1],tails[i],i)
 
-    print('== answer_1 ==')
-    Marauders_map_tracker()
-    print(len(set(tracker)))
-
-def main_1():
-    for move in moves:
-        head_moves(move.split())
-
-    print('answer_1: ',len(set(tracker)))
-
-main_test()
+print(len(set(tracker)))
+print(len(set(tracker_last)))
