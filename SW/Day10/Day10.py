@@ -38,4 +38,4 @@ for k in range(0, len(CRT)):
         CRT[k] = '.'
     print(CRT[k], end='')
     if (k % 40) == 39:
-        print('\n')
+        print('')
