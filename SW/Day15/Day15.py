@@ -15,20 +15,15 @@ def add_position(cou: list):
         temp = False
         if len(result) == 0:
             result.append(n)
-        else:
+        elif len(result) > 0:
             for ii in range(len(result)):
                 if result[ii][0] <= n[0] <= result[ii][1]:
                     if n[1] > result[ii][1]:
                         result[ii][1] = n[1]
                 else:
                     temp = True
-            if temp is True:
-                result.append(n)
-    for res in result:
-        if res[0] < 0:
-            res[0] = 0
-        if res[1] > 4000000:
-            res[1] = 4000000
+        if temp is True:
+            result.append(n)
     return result
 
 
@@ -47,7 +42,10 @@ for j in range(0, 4000001):
         check_position(sensor[tw], beacon[tw], j)
     pos = add_position(count)
     if len(pos) > 1:
-        tot.append([j, pos])
+        tot.extend([j, pos])
+    if j % 500000 == 0:
+        print('%d Done' % j)
 
-ans = tot[0][0] + (tot[0][1][0][1]+1)*4000000
+print(tot)
+ans = tot[0] + (tot[1][0][1]+1)*4000000
 print(ans)
